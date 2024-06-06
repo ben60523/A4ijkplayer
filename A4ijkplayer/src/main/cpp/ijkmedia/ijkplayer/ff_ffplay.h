@@ -25,6 +25,7 @@
 #ifndef FFPLAY__FF_FFPLAY_H
 #define FFPLAY__FF_FFPLAY_H
 
+#include <jni.h>
 #include "ff_ffplay_def.h"
 #include "ff_fferror.h"
 #include "ff_ffmsg.h"
@@ -51,6 +52,7 @@ void     *ffp_set_inject_opaque(FFPlayer *ffp, void *opaque);
 void     *ffp_set_ijkio_inject_opaque(FFPlayer *ffp, void *opaque);
 void      ffp_set_option(FFPlayer *ffp, int opt_category, const char *name, const char *value);
 void      ffp_set_option_int(FFPlayer *ffp, int opt_category, const char *name, int64_t value);
+void      ffp_set_option_intptr(FFPlayer *ffp, int opt_category, const char *name, uintptr_t value);
 
 int       ffp_get_video_codec_info(FFPlayer *ffp, char **codec_info);
 int       ffp_get_audio_codec_info(FFPlayer *ffp, char **codec_info);
@@ -117,5 +119,8 @@ void      ffp_set_property_int64(FFPlayer *ffp, int id, int64_t value);
 
 // must be freed with free();
 struct IjkMediaMeta *ffp_get_meta_l(FFPlayer *ffp);
+
+// NanoDet
+bool loadModel(JNIEnv *env, jobject assetManager);
 
 #endif

@@ -19,6 +19,7 @@ package tv.danmaku.ijk.media.player;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Build;
 import android.view.Surface;
@@ -86,7 +87,7 @@ public interface IMediaPlayer {
     String getDataSource();
 
     void prepareAsync() throws IllegalStateException;
-
+    void prepareAsync(AssetManager assetManager) throws IllegalStateException;
     void start() throws IllegalStateException;
 
     void stop() throws IllegalStateException;

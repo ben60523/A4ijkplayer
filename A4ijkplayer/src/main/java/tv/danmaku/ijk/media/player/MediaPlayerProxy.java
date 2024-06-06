@@ -19,6 +19,7 @@ package tv.danmaku.ijk.media.player;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Build;
 import android.view.Surface;
@@ -89,6 +90,11 @@ public class MediaPlayerProxy implements IMediaPlayer {
 
     @Override
     public void prepareAsync() throws IllegalStateException {
+        mBackEndMediaPlayer.prepareAsync();
+    }
+
+    @Override
+    public void prepareAsync(AssetManager assetManager) throws IllegalStateException {
         mBackEndMediaPlayer.prepareAsync();
     }
 

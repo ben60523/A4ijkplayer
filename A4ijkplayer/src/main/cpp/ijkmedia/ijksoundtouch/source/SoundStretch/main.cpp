@@ -291,43 +291,36 @@ int main(const int nParams, const char * const paramStr[])
 
     fprintf(stderr, _helloText, SoundTouch::getVersionString());
 
-    try
+
+    // Parse command line parameters
+    params = new RunParameters(nParams, paramStr);
+
+    // Open input & output files
+    openFiles(&inFile, &outFile, params);
+
+    if (params->detectBPM == true)
     {
-        // Parse command line parameters
-        params = new RunParameters(nParams, paramStr);
-
-        // Open input & output files
-        openFiles(&inFile, &outFile, params);
-
-        if (params->detectBPM == true)
-        {
-            // detect sound BPM (and adjust processing parameters
-            //  accordingly if necessary)
-            detectBPM(inFile, params);
-        }
-
-        // Setup the 'SoundTouch' object for processing the sound
-        setup(&soundTouch, inFile, params);
-
-        // clock_t cs = clock();    // for benchmarking processing duration
-        // Process the sound
-        process(&soundTouch, inFile, outFile);
-        // clock_t ce = clock();    // for benchmarking processing duration
-        // printf("duration: %lf\n", (double)(ce-cs)/CLOCKS_PER_SEC);
-
-        // Close WAV file handles & dispose of the objects
-        delete inFile;
-        delete outFile;
-        delete params;
-
-        fprintf(stderr, "Done!\n");
+        // detect sound BPM (and adjust processing parameters
+        //  accordingly if necessary)
+        detectBPM(inFile, params);
     }
-    catch (const runtime_error &e)
-    {
-        // An exception occurred during processing, display an error message
-        fprintf(stderr, "%s\n", e.what());
-        return -1;
-    }
+
+    // Setup the 'SoundTouch' object for processing the sound
+    setup(&soundTouch, inFile, params);
+
+    // clock_t cs = clock();    // for benchmarking processing duration
+    // Process the sound
+    process(&soundTouch, inFile, outFile);
+    // clock_t ce = clock();    // for benchmarking processing duration
+    // printf("duration: %lf\n", (double)(ce-cs)/CLOCKS_PER_SEC);
+
+    // Close WAV file handles & dispose of the objects
+    delete inFile;
+    delete outFile;
+    delete params;
+
+    fprintf(stderr, "Done!\n");
+
 
     return 0;
 }

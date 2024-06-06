@@ -23,6 +23,7 @@ import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.graphics.SurfaceTexture;
 import android.graphics.Rect;
 import android.media.MediaCodecInfo;
@@ -516,7 +517,12 @@ public final class IjkMediaPlayer extends AbstractMediaPlayer {
         _prepareAsync();
     }
 
+    public void prepareAsync(AssetManager assetManager) throws  IllegalStateException {
+        _prepareAsync(assetManager);
+    }
+
     public native void _prepareAsync() throws IllegalStateException;
+    public native void _prepareAsync(AssetManager assetManager) throws IllegalStateException;
 
     @Override
     public void start() throws IllegalStateException {

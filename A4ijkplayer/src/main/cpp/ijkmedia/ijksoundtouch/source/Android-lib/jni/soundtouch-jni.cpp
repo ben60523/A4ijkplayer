@@ -238,19 +238,7 @@ extern "C" DLL_PUBLIC int Java_net_surina_soundtouch_SoundTouch_processFile(JNIE
     /// gomp_tls storage bug workaround - see comments in _init_threading() function!
     if (_init_threading(true)) return -1;
 
-	try
-	{
-		_processFile(ptr, inputFile, outputFile);
-	}
-	catch (const runtime_error &e)
-    {
-		const char *err = e.what();
-        // An exception occurred during processing, return the error message
-    	LOGV("JNI exception in SoundTouch::processFile: %s", err);
-        _setErrmsg(err);
-        return -1;
-    }
-
+    _processFile(ptr, inputFile, outputFile);
 
 	env->ReleaseStringUTFChars(jinputFile, inputFile);
 	env->ReleaseStringUTFChars(joutputFile, outputFile);

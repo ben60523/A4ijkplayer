@@ -263,15 +263,7 @@ void RunParameters::parseSwitchParam(const string &str)
         case 'b' :
             // switch '-bpm=xx'
             detectBPM = true;
-            try
-            {
-                goalBPM = parseSwitchValue(str);
-            }
-            catch (const runtime_error)
-            {
-                // illegal or missing bpm value => just calculate bpm
-                goalBPM = 0;
-            }
+            goalBPM = parseSwitchValue(str);
             break;
 
         case 'q' :

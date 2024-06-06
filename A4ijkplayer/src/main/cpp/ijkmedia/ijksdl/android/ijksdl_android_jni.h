@@ -77,7 +77,7 @@ int     SDL_Android_GetApiLevel();
             ALOGE("FindClass failed: %s", classsign__); \
             return -1; \
         } \
-        var__ = (*env__)->NewGlobalRef(env__, clazz); \
+        var__ = (jclass)(*env__)->NewGlobalRef(env__, clazz); \
         if (J4A_ExceptionCheck__catchAll(env) || !(var__)) { \
             ALOGE("FindClass::NewGlobalRef failed: %s", classsign__); \
             (*env__)->DeleteLocalRef(env__, clazz); \
@@ -86,6 +86,21 @@ int     SDL_Android_GetApiLevel();
         (*env__)->DeleteLocalRef(env__, clazz); \
     } while(0);
 
+#define IJK_FIND_JAVA_CLASS_CPP(env__, var__, classsign__) \
+    do { \
+        jclass clazz = env__->FindClass(classsign__); \
+        if (J4A_ExceptionCheck__catchAll(env) || !(clazz)) { \
+            ALOGE("FindClass failed: %s", classsign__); \
+            return -1; \
+        } \
+        var__ = (jclass)env__->NewGlobalRef(clazz); \
+        if (J4A_ExceptionCheck__catchAll(env) || !(var__)) { \
+            ALOGE("FindClass::NewGlobalRef failed: %s", classsign__); \
+            env__->DeleteLocalRef(clazz); \
+            return -1; \
+        } \
+        env__->DeleteLocalRef(clazz); \
+    } while(0);
 #define JNI_CHECK_GOTO(condition__, env__, exception__, msg__, label__) \
     do { \
         if (!(condition__)) { \

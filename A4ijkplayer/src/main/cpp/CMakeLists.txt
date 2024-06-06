@@ -15,10 +15,18 @@
 #
 cmake_minimum_required(VERSION 3.4.1)
 
+set(CMAKE_ANDROID_EXCEPTIONS ON)
+set(NCNN_DISABLE_EXCEPTION OFF)
+
 set(PATH_TO_A4_PRJ_CPP ${CMAKE_CURRENT_SOURCE_DIR})
 set(PATH_TO_A4_IJK_MEDIA ${PATH_TO_A4_PRJ_CPP}/ijkmedia)
 set(PATH_TO_A4_IJK_PROF ${PATH_TO_A4_PRJ_CPP}/ijkprof)
 set(PATH_TO_OTHER_LIBS ${PATH_TO_A4_PRJ_CPP}/otherlibs)
+set(OpenCV_DIR ${PATH_TO_OTHER_LIBS}/opencv/sdk/native/jni)
+find_package(OpenCV REQUIRED core imgproc)
+set(ncnn_DIR ${PATH_TO_OTHER_LIBS}/ncnn/${ANDROID_ABI}/lib/cmake/ncnn)
+find_package(ncnn REQUIRED)
+
 
 message(${ANDROID_ABI})
 message(${PATH_TO_A4_PRJ_CPP})
@@ -116,11 +124,15 @@ add_library(
         ${SOURCE_C_FILES_OF_IJKPLAYER}
         ${SOURCE_CPP_FILES_OF_IJKPLAYER}
         ${SOURCE_C_FILES_OF_IJKPROF}
+        nanodet.cpp
 )
 
 target_link_libraries( # Specifies the target library.
         a4ijkplayer
         ${PATH_TO_OTHER_LIBS}/ffmpeg/libs/${ANDROID_ABI}/libijkffmpeg.so
+        ncnn
+        ${OpenCV_LIBS}
+        mediandk
         log
         android
         EGL
@@ -128,4 +140,4 @@ target_link_libraries( # Specifies the target library.
         jnigraphics
         OpenSLES
         m z
-        )
+)

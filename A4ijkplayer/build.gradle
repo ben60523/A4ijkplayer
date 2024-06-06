@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         minSdk 21
-        targetSdk 31
+        targetSdk 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -17,6 +17,7 @@ android {
             cmake {
                 abiFilters 'armeabi-v7a', 'arm64-v8a'
                 arguments '-DANDROID_ARM_NEON=TRUE', '-DANDROID_STL=c++_shared'
+                cppFlags '-std=c++11 -frtti -fexceptions'
             }
         }
     }
@@ -30,10 +31,10 @@ android {
     externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"
-            version "3.6.0"
+            version "3.26.3"
         }
     }
-    ndkVersion '21.4.7075529'
+    ndkVersion '25.1.8937393'
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

@@ -20,6 +20,7 @@ package tv.danmaku.ijk.media.player;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.media.AudioManager;
 import android.media.MediaDataSource;
 import android.media.MediaPlayer;
@@ -163,6 +164,11 @@ public class AndroidMediaPlayer extends AbstractMediaPlayer {
 
     @Override
     public void prepareAsync() throws IllegalStateException {
+        mInternalMediaPlayer.prepareAsync();
+    }
+
+    @Override
+    public void prepareAsync(AssetManager assetManager) throws IllegalArgumentException {
         mInternalMediaPlayer.prepareAsync();
     }
 
