@@ -150,6 +150,8 @@ int64_t get_valid_channel_layout(int64_t channel_layout, int channels)
 
 static NanoDet* g_nanodet = 0;
 static ncnn::Mutex lock;
+static SwsContext *av2cv = NULL;
+static SwsContext *cv2av = NULL;
 
 static void free_picture(Frame *vp);
 
@@ -1671,19 +1673,28 @@ static int queue_picture(FFPlayer *ffp, AVFrame *src_frame, double pts, double d
 #endif
         // FIXME: set swscale options
         // Use NCNN here
-        if (g_nanodet) {
+        if (g_nanodet && ffp->stat.video_cache.duration < 200) {
+            if (av2cv == NULL) {
+                av2cv = sws_getContext(
+                        src_frame->width, src_frame->height, AVPixelFormat::AV_PIX_FMT_YUV420P,
+                        src_frame->width, src_frame->height,
+                        AVPixelFormat::AV_PIX_FMT_RGB24, SWS_FAST_BILINEAR, NULL, NULL, NULL);
+            }
+            if (cv2av == NULL) {
+                cv2av = sws_getContext(
+                        src_frame->width, src_frame->height, AVPixelFormat::AV_PIX_FMT_RGB24, src_frame->width,
+                        src_frame->height,
+                        AVPixelFormat::AV_PIX_FMT_YUV420P, SWS_FAST_BILINEAR, NULL, NULL, NULL);
+            }
             std::vector<Object> objects;
             int w = src_frame->width;
             int h = src_frame->height;
             cv::Mat mat(h, w, CV_8UC3);
             int cvLinesizes[1];
             cvLinesizes[0] = mat.step1();
-            SwsContext *av2cv = sws_getContext(
-                    w, h, AVPixelFormat::AV_PIX_FMT_YUV422P, w, h,
-                    AVPixelFormat::AV_PIX_FMT_RGB24, SWS_FAST_BILINEAR, NULL, NULL, NULL);
             sws_scale(av2cv, src_frame->data, src_frame->linesize, 0, h, &mat.data,
                       cvLinesizes);
-            sws_freeContext(av2cv);
+            ncnn::MutexLockGuard g(lock);
             g_nanodet->detect(mat, objects);
 //            if (objects.size() > 0) {
 //                for (int i = 0; i < objects.size(); i++) {
@@ -1696,13 +1707,8 @@ static int queue_picture(FFPlayer *ffp, AVFrame *src_frame, double pts, double d
 //                }
 //            }
             g_nanodet->draw(mat, objects);
-
-            SwsContext *cv2av = sws_getContext(
-                    w, h, AVPixelFormat::AV_PIX_FMT_RGB24, w, h,
-                    AVPixelFormat::AV_PIX_FMT_YUV422P, SWS_FAST_BILINEAR, NULL, NULL, NULL);
             sws_scale(cv2av, &mat.data, cvLinesizes, 0, h, src_frame->data,
                       src_frame->linesize);
-            sws_freeContext(cv2av);
         }
         if (SDL_VoutFillFrameYUVOverlay(vp->bmp, src_frame) < 0) {
             av_log(NULL, AV_LOG_FATAL, "Cannot initialize the conversion context\n");
@@ -3973,7 +3979,7 @@ void ffp_global_set_log_report(int use_report)
 void ffp_global_set_log_level(int log_level)
 {
     int av_level = log_level_ijk_to_av(log_level);
-    av_log_set_level(av_level);
+    av_log_set_level(AV_LOG_INFO);
 }
 
 static ijk_inject_callback s_inject_callback;
@@ -4422,6 +4428,14 @@ int ffp_stop_l(FFPlayer *ffp)
 {
     assert(ffp);
     VideoState *is = ffp->is;
+    if (g_nanodet) {
+        ncnn::MutexLockGuard g(lock);
+        sws_freeContext(cv2av);
+        sws_freeContext(av2cv);
+//        delete g_nanodet;
+        g_nanodet = 0;
+    }
+
     if (is) {
         is->abort_request = 1;
         toggle_pause(ffp, 1);
@@ -5113,7 +5127,7 @@ bool loadModel(JNIEnv *env, jobject assetManager) {
         g_nanodet = new NanoDet;
     }
     g_nanodet->load(mgr, modeltype, target_size, mean_val,
-                    norm_val, false);
+                    norm_val, true);
 
     return true;
 }

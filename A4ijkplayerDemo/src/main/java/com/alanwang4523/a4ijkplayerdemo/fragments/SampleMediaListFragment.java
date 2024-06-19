@@ -72,6 +72,11 @@ public class SampleMediaListFragment extends Fragment {
 
         mAdapter.addItem("http://192.168.42.1:8080/?action=stream", "FM-308");
         mAdapter.addItem("rtmp://live.fasmedo.com/app/stream", "Fasmedo Live Demo");
+        mAdapter.addItem(
+                "http://192.168.168.1:81/livestream.cgi?streamid=10&substream=1&userId=206617174&loginuse=admin&loginpas=888888&user=admin&pwd=888888&",
+                "SQ15 WebCam"
+        );
+
     }
 
     final class SampleMediaItem {
