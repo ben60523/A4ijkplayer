@@ -393,7 +393,8 @@ IjkMediaPlayer_release(JNIEnv *env, jobject thiz)
     //only delete weak_thiz at release
     jobject weak_thiz = (jobject) ijkmp_set_weak_thiz(mp, NULL );
 #ifdef __cplusplus
-    env->DeleteLocalRef(weak_thiz);
+    env->DeleteGlobalRef(weak_thiz);
+//    env->DeleteLocalRef(weak_thiz);
 #else
     (*env)->DeleteGlobalRef(env, weak_thiz);
 #endif
