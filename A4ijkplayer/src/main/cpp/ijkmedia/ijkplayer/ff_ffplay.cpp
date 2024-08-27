@@ -1673,7 +1673,7 @@ static int queue_picture(FFPlayer *ffp, AVFrame *src_frame, double pts, double d
 #endif
         // FIXME: set swscale options
         // Use NCNN here
-        if (g_nanodet && ffp->stat.video_cache.duration < 200) {
+        if (g_nanodet && ffp->stat.video_cache.duration < 100) {
             if (av2cv == NULL) {
                 av2cv = sws_getContext(
                         src_frame->width, src_frame->height, AVPixelFormat::AV_PIX_FMT_YUV420P,
